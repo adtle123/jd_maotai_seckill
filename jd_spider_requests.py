@@ -336,8 +336,7 @@ class JdSeckill(object):
         """
         with ProcessPoolExecutor(work_count) as pool:
             for i in range(work_count):
-                self._get_seckill_order_data()
-                # pool.submit(self.seckill)
+                pool.submit(self.seckill)
 
     def _reserve(self):
         """
@@ -507,13 +506,9 @@ class JdSeckill(object):
             'isModifyAddress': 'false',
         }
         headers = {
-            'User-Agent': self.user_agent,
-            'Host': 'marathon.jd.com'
+            'User-Agent': self.user_agent
         }
-        print(headers)
-        print(self.session.cookies)
         resp = self.session.post(url=url, data=data, headers=headers)
-
         resp_json = None
         try:
             resp_json = parse_json(resp.text)
