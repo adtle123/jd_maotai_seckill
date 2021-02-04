@@ -26,6 +26,7 @@ class SpiderSession:
     """
     Session相关操作
     """
+
     def __init__(self):
         self.cookies_dir_path = "./cookies/"
         self.user_agent = global_config.getRaw('config', 'DEFAULT_USER_AGENT')
@@ -101,6 +102,7 @@ class QrLogin:
     """
     扫码登录
     """
+
     def __init__(self, spider_session: SpiderSession):
         """
         初始化扫码登录
@@ -302,12 +304,14 @@ class JdSeckill(object):
         """
         用户登陆态校验装饰器。若用户未登陆，则调用扫码登陆
         """
+
         @functools.wraps(func)
         def new_func(self, *args, **kwargs):
             if not self.qrlogin.is_login:
                 logger.info("{0} 需登陆后调用，开始扫码登陆".format(func.__name__))
                 self.login_by_qrcode()
             return func(self, *args, **kwargs)
+
         return new_func
 
     @check_login
@@ -332,7 +336,8 @@ class JdSeckill(object):
         """
         with ProcessPoolExecutor(work_count) as pool:
             for i in range(work_count):
-                pool.submit(self.seckill)
+                self._get_seckill_order_data()
+                # pool.submit(self.seckill)
 
     def _reserve(self):
         """
@@ -503,8 +508,10 @@ class JdSeckill(object):
         }
         headers = {
             'User-Agent': self.user_agent,
-            'Host': 'marathon.jd.com',
+            'Host': 'marathon.jd.com'
         }
+        print(headers)
+        print(self.session.cookies)
         resp = self.session.post(url=url, data=data, headers=headers)
 
         resp_json = None
